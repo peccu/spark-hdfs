@@ -32,6 +32,8 @@ services:
       context: jupyterlab
     environment:
       - SPARK_MASTER=spark:://spark:7077
+      - SPARK_USER=root
+      - SPARK_DAEMON_USER=root
     restart: always
     ports:
       - '28888:8888'
@@ -45,11 +47,8 @@ services:
     environment:
       - SPARK_MODE=master
       - SPARK_MASTER_WEBUI_PORT=2080
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - SPARK_USER=spark
+      - SPARK_USER=root
+      - SPARK_DAEMON_USER=root
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
       interval: 5s
@@ -68,11 +67,8 @@ services:
       - SPARK_MASTER_URL=spark://spark:7077
       - SPARK_WORKER_MEMORY=1G
       - SPARK_WORKER_CORES=1
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - SPARK_USER=spark
+      - SPARK_USER=root
+      - SPARK_DAEMON_USER=root
       # for fixing web ui url
       - SPARK_PUBLIC_DNS=localhost
       - SPARK_WORKER_WEBUI_PORT=28081
@@ -88,11 +84,8 @@ services:
       - SPARK_MASTER_URL=spark://spark:7077
       - SPARK_WORKER_MEMORY=1G
       - SPARK_WORKER_CORES=1
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - SPARK_USER=spark
+      - SPARK_USER=root
+      - SPARK_DAEMON_USER=root
       # for fixing web ui url
       - SPARK_PUBLIC_DNS=localhost
       - SPARK_WORKER_WEBUI_PORT=28082
@@ -108,11 +101,8 @@ services:
       - SPARK_MASTER_URL=spark://spark:7077
       - SPARK_WORKER_MEMORY=1G
       - SPARK_WORKER_CORES=1
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - SPARK_USER=spark
+      - SPARK_USER=root
+      - SPARK_DAEMON_USER=root
       # for fixing web ui url
       - SPARK_PUBLIC_DNS=localhost
       - SPARK_WORKER_WEBUI_PORT=28083
@@ -128,11 +118,8 @@ services:
       - SPARK_MASTER_URL=spark://spark:7077
       - SPARK_WORKER_MEMORY=1G
       - SPARK_WORKER_CORES=1
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - SPARK_USER=spark
+      - SPARK_USER=root
+      - SPARK_DAEMON_USER=root
       # for fixing web ui url
       - SPARK_PUBLIC_DNS=localhost
       - SPARK_WORKER_WEBUI_PORT=28084
