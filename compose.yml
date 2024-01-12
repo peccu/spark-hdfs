@@ -1,0 +1,156 @@
+# based on https://github.com/bitnami/containers/blob/main/bitnami/spark/docker-compose.yml
+# and merge https://github.com/mrn-aglic/pyspark-playground/blob/main/docker-compose.yml
+
+
+# Copyright VMware, Inc.
+# SPDX-License-Identifier: APACHE-2.0
+
+version: '3.8'
+
+x-volumes: &volumes
+  # samples are in /opt/bitnami/spark/examples
+  - ./jupyterlab:/requirements
+  - ./notebooks:/opt/spark
+  - ./spark_apps:/opt/spark/apps
+  - ./spark_conf/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
+  - ./spark_data:/opt/spark/data
+  - spark-logs:/opt/spark/spark-events
+
+x-worker: &worker
+  user: root
+  image: docker.io/bitnami/spark:3.5
+  depends_on:
+    - spark
+  restart: always
+  volumes: *volumes
+
+services:
+
+  jupyter:
+    user: root
+    build:
+      context: jupyterlab
+    environment:
+      - SPARK_MASTER=spark:://spark:7077
+    restart: always
+    ports:
+      - '28888:8888'
+    volumes: *volumes
+
+  spark:
+    # https://hub.docker.com/r/bitnami/spark
+    image: docker.io/bitnami/spark:3.5
+    user: root
+    hostname: spark
+    environment:
+      - SPARK_MODE=master
+      - SPARK_MASTER_WEBUI_PORT=2080
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    restart: always
+    ports:
+      - '2080:2080'
+      - '4040:4040'
+    volumes: *volumes
+
+  worker1:
+    << : *worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+      # for fixing web ui url
+      - SPARK_PUBLIC_DNS=localhost
+      - SPARK_WORKER_WEBUI_PORT=28081
+      - SPARK_MASTER_HOST=spark
+      - SPARK_MASTER_WEBUI_PORT=2080
+    ports:
+      - '28081:28081'
+
+  worker2:
+    << : *worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+      # for fixing web ui url
+      - SPARK_PUBLIC_DNS=localhost
+      - SPARK_WORKER_WEBUI_PORT=28082
+      - SPARK_MASTER_HOST=spark
+      - SPARK_MASTER_WEBUI_PORT=2080
+    ports:
+      - '28082:28082'
+
+  worker3:
+    << : *worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+      # for fixing web ui url
+      - SPARK_PUBLIC_DNS=localhost
+      - SPARK_WORKER_WEBUI_PORT=28083
+      - SPARK_MASTER_HOST=spark
+      - SPARK_MASTER_WEBUI_PORT=2080
+    ports:
+      - '28083:28083'
+
+  worker4:
+    << : *worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+      # for fixing web ui url
+      - SPARK_PUBLIC_DNS=localhost
+      - SPARK_WORKER_WEBUI_PORT=28084
+      - SPARK_MASTER_HOST=spark
+      - SPARK_MASTER_WEBUI_PORT=2080
+    ports:
+      - '28084:28084'
+
+  history:
+    image: docker.io/bitnami/spark:3.5
+    profiles: ['history']
+    entrypoint: ['start-history-server.sh']
+    depends_on:
+      - spark
+    volumes:
+      - spark-logs:/opt/spark/spark-events
+    ports:
+      - '18080:18080'
+
+volumes:
+  spark-logs:
