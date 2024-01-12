@@ -1,0 +1,13 @@
+# for base UI
+jupyterlab
+# for manage requirements. cf. https://pip-compile-multi.readthedocs.io/en/latest/why.html#managing-dependency-versions-in-multiple-environments
+pip-compile-multi
+# pip install -Ur requirements/local.txt
+ipython
+pandas
+pyarrow
+numpy
+pyspark
+grpcio
+grpcio-status
+google-api-python-client
