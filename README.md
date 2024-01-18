@@ -8,7 +8,7 @@ write down it to `jupyterlab/requirements/requirements.in` and run below command
 
 ```
 docker compose run --rm --entrypoint /bin/bash -w /requirements jupyter -c "pip-compile-multi" && docker compose build
-``
+```
 
 or, just run  `make pip-compile-multi`.
 
