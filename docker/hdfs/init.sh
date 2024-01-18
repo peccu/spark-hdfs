@@ -3,7 +3,7 @@
 nodetype=$1
 if [ -z $nodetype ]
 then
-    echo "Please specify namenode or datanode"
+    echo "Please specify namenode or datanode or single"
     exit 1
 fi
 
@@ -19,7 +19,13 @@ if [ ! -e $HADOOP_CONF_DIR/has_run_before ]; then
     echo "First time running Hadoop. Formatting HDFS..."
 
     # HDFSをフォーマット
-    hdfs $nodetype -format -force -clusterID $clusterID
+    if [ "$nodetype" == "single" ]
+    then
+        hdfs namenode -format -force -clusterID $clusterID
+        hdfs datanode -format -force -clusterID $clusterID
+    else
+        hdfs $nodetype -format -force -clusterID $clusterID
+    fi
 
     # ファイルを作成して初回実行済みであることをマーク
     touch $HADOOP_CONF_DIR/has_run_before
@@ -30,6 +36,9 @@ fi
 # Hadoopを起動
 # JAVA_HOME is not set...
 # $HADOOP_HOME/sbin/start-all.sh
-# $HADOOP_HOME/sbin/start-dfs.sh
-# this looks like working
-$HADOOP_HOME/bin/hdfs $nodetype
+if [ "$nodetype" == "single" ]
+then
+    $HADOOP_HOME/sbin/start-dfs.sh
+else
+    $HADOOP_HOME/bin/hdfs $nodetype
+fi

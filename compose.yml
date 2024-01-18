@@ -93,65 +93,65 @@ services:
     ports:
       - '28081:28081'
 
-  worker2:
-    << : *worker
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark:7077
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_WORKER_MEMORY=1G
-      - SPARK_WORKER_CORES=1
-      - SPARK_USER=root
-      - SPARK_DAEMON_USER=root
-      # for fixing web ui url
-      - SPARK_PUBLIC_DNS=localhost
-      - SPARK_WORKER_WEBUI_PORT=28082
-      - SPARK_MASTER_HOST=spark
-      - SPARK_MASTER_WEBUI_PORT=2080
-    ports:
-      - '28082:28082'
+  # worker2:
+  #   << : *worker
+  #   environment:
+  #     - SPARK_MODE=worker
+  #     - SPARK_MASTER_URL=spark://spark:7077
+  #     - SPARK_RPC_AUTHENTICATION_ENABLED=no
+  #     - SPARK_RPC_ENCRYPTION_ENABLED=no
+  #     - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+  #     - SPARK_WORKER_MEMORY=1G
+  #     - SPARK_WORKER_CORES=1
+  #     - SPARK_USER=root
+  #     - SPARK_DAEMON_USER=root
+  #     # for fixing web ui url
+  #     - SPARK_PUBLIC_DNS=localhost
+  #     - SPARK_WORKER_WEBUI_PORT=28082
+  #     - SPARK_MASTER_HOST=spark
+  #     - SPARK_MASTER_WEBUI_PORT=2080
+  #   ports:
+  #     - '28082:28082'
 
-  worker3:
-    << : *worker
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark:7077
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_WORKER_MEMORY=1G
-      - SPARK_WORKER_CORES=1
-      - SPARK_USER=root
-      - SPARK_DAEMON_USER=root
-      # for fixing web ui url
-      - SPARK_PUBLIC_DNS=localhost
-      - SPARK_WORKER_WEBUI_PORT=28083
-      - SPARK_MASTER_HOST=spark
-      - SPARK_MASTER_WEBUI_PORT=2080
-    ports:
-      - '28083:28083'
+  # worker3:
+  #   << : *worker
+  #   environment:
+  #     - SPARK_MODE=worker
+  #     - SPARK_MASTER_URL=spark://spark:7077
+  #     - SPARK_RPC_AUTHENTICATION_ENABLED=no
+  #     - SPARK_RPC_ENCRYPTION_ENABLED=no
+  #     - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+  #     - SPARK_WORKER_MEMORY=1G
+  #     - SPARK_WORKER_CORES=1
+  #     - SPARK_USER=root
+  #     - SPARK_DAEMON_USER=root
+  #     # for fixing web ui url
+  #     - SPARK_PUBLIC_DNS=localhost
+  #     - SPARK_WORKER_WEBUI_PORT=28083
+  #     - SPARK_MASTER_HOST=spark
+  #     - SPARK_MASTER_WEBUI_PORT=2080
+  #   ports:
+  #     - '28083:28083'
 
-  worker4:
-    << : *worker
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark:7077
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_WORKER_MEMORY=1G
-      - SPARK_WORKER_CORES=1
-      - SPARK_USER=root
-      - SPARK_DAEMON_USER=root
-      # for fixing web ui url
-      - SPARK_PUBLIC_DNS=localhost
-      - SPARK_WORKER_WEBUI_PORT=28084
-      - SPARK_MASTER_HOST=spark
-      - SPARK_MASTER_WEBUI_PORT=2080
-    ports:
-      - '28084:28084'
+  # worker4:
+  #   << : *worker
+  #   environment:
+  #     - SPARK_MODE=worker
+  #     - SPARK_MASTER_URL=spark://spark:7077
+  #     - SPARK_RPC_AUTHENTICATION_ENABLED=no
+  #     - SPARK_RPC_ENCRYPTION_ENABLED=no
+  #     - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+  #     - SPARK_WORKER_MEMORY=1G
+  #     - SPARK_WORKER_CORES=1
+  #     - SPARK_USER=root
+  #     - SPARK_DAEMON_USER=root
+  #     # for fixing web ui url
+  #     - SPARK_PUBLIC_DNS=localhost
+  #     - SPARK_WORKER_WEBUI_PORT=28084
+  #     - SPARK_MASTER_HOST=spark
+  #     - SPARK_MASTER_WEBUI_PORT=2080
+  #   ports:
+  #     - '28084:28084'
 
   spark-history:
     image: docker.io/bitnami/spark:3.5
@@ -167,6 +167,20 @@ services:
   ################
   # HDFS
   ################
+  # # single container version
+  # namenode:
+  #   profiles: ['all', 'hdfs']
+  #   build: docker/hdfs
+  #   command: single
+  #   ports:
+  #     # web ui
+  #     - "9870:9870"
+  #   volumes:
+  #     - ./hdfs-shared-data:/hdfs-shared-data
+  #     - ./hdfs-volume/namenode:/hadoop/dfs/namenode
+  #   environment:
+  #     - CLUSTER_NAME=cluster
+
   namenode:
     profiles: ['all', 'hdfs']
     build: docker/hdfs
