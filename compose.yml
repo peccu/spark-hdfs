@@ -1,22 +1,19 @@
 # based on https://github.com/bitnami/containers/blob/main/bitnami/spark/docker-compose.yml
 # and merge https://github.com/mrn-aglic/pyspark-playground/blob/main/docker-compose.yml
 
-
-# Copyright VMware, Inc.
-# SPDX-License-Identifier: APACHE-2.0
-
 version: '3.8'
 
 x-volumes: &volumes
   # samples are in /opt/bitnami/spark/examples
-  - ./jupyterlab:/requirements
-  - ./notebooks:/opt/spark
-  - ./spark_apps:/opt/spark/apps
-  - ./spark_conf/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
-  - ./spark_data:/opt/spark/data
+  - ./docker/jupyterlab:/requirements
+  - ./jupyter-volume:/opt/spark
+  - ./spark-volume/apps:/opt/spark/apps
+  - ./spark-volume/conf/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
+  - ./spark-volume/data:/opt/spark/data
   - spark-logs:/opt/spark/spark-events
 
 x-worker: &worker
+  profiles: ['all', 'spark']
   user: root
   image: docker.io/bitnami/spark:3.5
   depends_on:
@@ -26,26 +23,42 @@ x-worker: &worker
 
 services:
 
+  ################
+  # Interface
+  ################
+
+  # Jupyter
   jupyter:
+    profiles: ['all', 'spark']
     user: root
     build:
-      context: jupyterlab
+      context: docker/jupyterlab
     environment:
       - SPARK_MASTER=spark:://spark:7077
       - SPARK_USER=root
       - SPARK_DAEMON_USER=root
     restart: always
+    depends_on:
+      - spark
     ports:
       - '28888:8888'
     volumes: *volumes
 
+  ################
+  # Spark
+  ################
+
   spark:
+    profiles: ['all', 'spark']
     # https://hub.docker.com/r/bitnami/spark
     image: docker.io/bitnami/spark:3.5
     user: root
     hostname: spark
     environment:
       - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_MASTER_WEBUI_PORT=2080
       - SPARK_USER=root
       - SPARK_DAEMON_USER=root
@@ -65,6 +78,9 @@ services:
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_WORKER_MEMORY=1G
       - SPARK_WORKER_CORES=1
       - SPARK_USER=root
@@ -82,6 +98,9 @@ services:
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_WORKER_MEMORY=1G
       - SPARK_WORKER_CORES=1
       - SPARK_USER=root
@@ -99,6 +118,9 @@ services:
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_WORKER_MEMORY=1G
       - SPARK_WORKER_CORES=1
       - SPARK_USER=root
@@ -116,6 +138,9 @@ services:
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_WORKER_MEMORY=1G
       - SPARK_WORKER_CORES=1
       - SPARK_USER=root
@@ -128,9 +153,9 @@ services:
     ports:
       - '28084:28084'
 
-  history:
+  spark-history:
     image: docker.io/bitnami/spark:3.5
-    profiles: ['history']
+    profiles: ['all', 'history']
     entrypoint: ['start-history-server.sh']
     depends_on:
       - spark
@@ -138,6 +163,56 @@ services:
       - spark-logs:/opt/spark/spark-events
     ports:
       - '18080:18080'
+
+  ################
+  # HDFS
+  ################
+  namenode:
+    profiles: ['all', 'hdfs']
+    build: docker/hdfs
+    command: namenode
+    ports:
+      # web ui
+      - "9870:9870"
+    volumes:
+      - ./hdfs-shared-data:/hdfs-shared-data
+      - ./hdfs-volume/namenode:/hadoop/dfs/namenode
+    environment:
+      - CLUSTER_NAME=cluster
+
+  datanode:
+    profiles: ['all', 'hdfs']
+    build: docker/hdfs
+    command: datanode
+    ports:
+      # web ui
+      - "9864:9864"
+    volumes:
+      - ./hdfs-volume/datanode:/hadoop/dfs/datanode
+    depends_on:
+      - namenode
+    environment:
+      - CLUSTER_NAME=cluster
+      - SERVICE_PRECONDITION=namenode:9870
+
+  ################
+  # Hive
+  ################
+  hive-metastore:
+    profiles: ['all', 'hive']
+    build:
+      context: docker/hive
+      dockerfile: Dockerfile.metastore
+    ports:
+      - "9083:9083"
+
+  hive-server:
+    profiles: ['all', 'hive']
+    build:
+      context: docker/hive
+      dockerfile: Dockerfile.server
+    ports:
+      - "10000:10000"
 
 volumes:
   spark-logs:
