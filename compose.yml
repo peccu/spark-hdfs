@@ -31,8 +31,10 @@ services:
   jupyter:
     profiles: ['all', 'spark']
     user: root
-    build:
-      context: docker/jupyterlab
+    # build:
+    #   context: docker/jupyterlab
+    # image: peccu/spark-jupyterlab
+    image: jupyterlab
     environment:
       - SPARK_MASTER=spark:://spark:7077
       - SPARK_USER=root
@@ -171,6 +173,8 @@ services:
   # namenode:
   #   profiles: ['all', 'hdfs']
   #   build: docker/hdfs
+  #   # image: peccu/hdfs
+  #   image: hdfs
   #   command: single
   #   ports:
   #     # web ui
@@ -183,7 +187,9 @@ services:
 
   namenode:
     profiles: ['all', 'hdfs']
-    build: docker/hdfs
+    # build: docker/hdfs
+    # image: peccu/hdfs
+    image: hdfs
     command: namenode
     ports:
       # web ui
@@ -196,7 +202,9 @@ services:
 
   datanode:
     profiles: ['all', 'hdfs']
-    build: docker/hdfs
+    # build: docker/hdfs
+    # image: peccu/hdfs
+    image: hdfs
     command: datanode
     ports:
       # web ui
@@ -214,17 +222,21 @@ services:
   ################
   hive-metastore:
     profiles: ['all', 'hive']
-    build:
-      context: docker/hive
-      dockerfile: Dockerfile.metastore
+    # build:
+    #   context: docker/hive
+    #   dockerfile: Dockerfile.metastore
+    image: peccu/hive-metastore
+    image: metastore
     ports:
       - "9083:9083"
 
   hive-server:
     profiles: ['all', 'hive']
-    build:
-      context: docker/hive
-      dockerfile: Dockerfile.server
+    # build:
+    #   context: docker/hive
+    #   dockerfile: Dockerfile.server
+    # image: peccu/hive-server
+    image: hive-server
     ports:
       - "10000:10000"
     depends_on:
