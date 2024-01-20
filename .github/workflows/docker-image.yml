@@ -1,0 +1,110 @@
+name: Publish Docker image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  push_to_registries:
+    name: Push Docker image to multiple registries
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta-jupyter
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: |
+            peccu/spark-jupyterlab
+            ghcr.io/peccu/spark-jupyterlab
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: docker/jupyterlab
+          file: Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta-j.outputs.tags }}
+            peccu/spark-jupyterlab:latest
+            ghcr.io/peccu/spark-jupyterlab:latest
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta-hdfs
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: |
+            peccu/hdfs
+            ghcr.io/peccu/hdfs
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: docker/hdfs
+          file: Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta-hdfs.outputs.tags }}
+            peccu/hdfs:latest
+            ghcr.io/peccu/hdfs:latest
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta-hive-metastore
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: |
+            peccu/hive-metastore
+            ghcr.io/peccu/hive-metastore
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: docker/hive
+          file: Dockerfile.metastore
+          push: true
+          tags: |
+            ${{ steps.meta-hive-metastore.outputs.tags }}
+            peccu/hive-metastore:latest
+            ghcr.io/peccu/hive-metastore:latest
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta-hive-server
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: |
+            peccu/hive-server
+            ghcr.io/peccu/hive-server
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: docker/hive
+          file: Dockerfile.server
+          push: true
+          tags: |
+            ${{ steps.meta-hive-server.outputs.tags }}
+            peccu/hive-server:latest
+            ghcr.io/peccu/hive-server:latest
+          labels: ${{ steps.meta.outputs.labels }}
