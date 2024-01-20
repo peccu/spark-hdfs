@@ -63,7 +63,7 @@ services:
       - SPARK_USER=root
       - SPARK_DAEMON_USER=root
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:2080" ]
       interval: 5s
       timeout: 3s
       retries: 3
@@ -227,6 +227,8 @@ services:
       dockerfile: Dockerfile.server
     ports:
       - "10000:10000"
+    depends_on:
+      - hive-metastore
 
 volumes:
   spark-logs:
