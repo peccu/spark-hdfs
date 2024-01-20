@@ -41,7 +41,7 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: docker/jupyterlab
-          file: Dockerfile
+          file: docker/jupyterlabDockerfile
           push: true
           tags: |
             ${{ steps.meta-j.outputs.tags }}
@@ -61,7 +61,7 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: docker/hdfs
-          file: Dockerfile
+          file: docker/hdfs/Dockerfile
           push: true
           tags: |
             ${{ steps.meta-hdfs.outputs.tags }}
@@ -81,7 +81,7 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: docker/hive
-          file: Dockerfile.metastore
+          file: docker/hive/Dockerfile.metastore
           push: true
           tags: |
             ${{ steps.meta-hive-metastore.outputs.tags }}
@@ -101,7 +101,7 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: docker/hive
-          file: Dockerfile.server
+          file: docker/hive/Dockerfile.server
           push: true
           tags: |
             ${{ steps.meta-hive-server.outputs.tags }}
