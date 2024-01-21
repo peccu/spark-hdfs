@@ -1,0 +1,227 @@
+version: '3.8'
+
+x-worker: &worker
+  profiles: ['all', 'spark']
+  user: root
+  image: docker.io/bitnami/spark:3.5
+  depends_on:
+    - spark
+  restart: always
+
+services:
+
+  ################
+  # Interface
+  ################
+
+  # Jupyter
+  jupyter:
+    profiles: ['all', 'spark']
+    user: root
+    # build:
+    #   context: docker/jupyterlab
+    image: peccu/spark-jupyterlab
+    # image: jupyterlab
+    environment:
+      - SPARK_MASTER=spark:://spark:7077
+      - SPARK_USER=root
+      - SPARK_DAEMON_USER=root
+    restart: always
+    depends_on:
+      - spark
+    ports:
+      - '8888:8888'
+
+  ################
+  # Spark
+  ################
+
+  spark:
+    profiles: ['all', 'spark']
+    # https://hub.docker.com/r/bitnami/spark
+    image: docker.io/bitnami/spark:3.5
+    user: root
+    hostname: spark
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_MASTER_WEBUI_PORT=8080
+      - SPARK_USER=root
+      - SPARK_DAEMON_USER=root
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    restart: always
+    ports:
+      - '8080:8080'
+      - '4040:4040'
+
+  worker1:
+    << : *worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_USER=root
+      - SPARK_DAEMON_USER=root
+      # for fixing web ui url
+      - SPARK_PUBLIC_DNS=localhost
+      - SPARK_WORKER_WEBUI_PORT=8081
+      - SPARK_MASTER_HOST=spark
+      - SPARK_MASTER_WEBUI_PORT=8080
+    ports:
+      - '8081:8081'
+
+  # worker2:
+  #   << : *worker
+  #   environment:
+  #     - SPARK_MODE=worker
+  #     - SPARK_MASTER_URL=spark://spark:7077
+  #     - SPARK_RPC_AUTHENTICATION_ENABLED=no
+  #     - SPARK_RPC_ENCRYPTION_ENABLED=no
+  #     - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+  #     - SPARK_WORKER_MEMORY=1G
+  #     - SPARK_WORKER_CORES=1
+  #     - SPARK_USER=root
+  #     - SPARK_DAEMON_USER=root
+  #     # for fixing web ui url
+  #     - SPARK_PUBLIC_DNS=localhost
+  #     - SPARK_WORKER_WEBUI_PORT=8082
+  #     - SPARK_MASTER_HOST=spark
+  #     - SPARK_MASTER_WEBUI_PORT=8080
+  #   ports:
+  #     - '8082:8082'
+
+  # worker3:
+  #   << : *worker
+  #   environment:
+  #     - SPARK_MODE=worker
+  #     - SPARK_MASTER_URL=spark://spark:7077
+  #     - SPARK_RPC_AUTHENTICATION_ENABLED=no
+  #     - SPARK_RPC_ENCRYPTION_ENABLED=no
+  #     - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+  #     - SPARK_WORKER_MEMORY=1G
+  #     - SPARK_WORKER_CORES=1
+  #     - SPARK_USER=root
+  #     - SPARK_DAEMON_USER=root
+  #     # for fixing web ui url
+  #     - SPARK_PUBLIC_DNS=localhost
+  #     - SPARK_WORKER_WEBUI_PORT=8083
+  #     - SPARK_MASTER_HOST=spark
+  #     - SPARK_MASTER_WEBUI_PORT=8080
+  #   ports:
+  #     - '8083:8083'
+
+  # worker4:
+  #   << : *worker
+  #   environment:
+  #     - SPARK_MODE=worker
+  #     - SPARK_MASTER_URL=spark://spark:7077
+  #     - SPARK_RPC_AUTHENTICATION_ENABLED=no
+  #     - SPARK_RPC_ENCRYPTION_ENABLED=no
+  #     - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+  #     - SPARK_WORKER_MEMORY=1G
+  #     - SPARK_WORKER_CORES=1
+  #     - SPARK_USER=root
+  #     - SPARK_DAEMON_USER=root
+  #     # for fixing web ui url
+  #     - SPARK_PUBLIC_DNS=localhost
+  #     - SPARK_WORKER_WEBUI_PORT=8084
+  #     - SPARK_MASTER_HOST=spark
+  #     - SPARK_MASTER_WEBUI_PORT=8080
+  #   ports:
+  #     - '8084:8084'
+
+  spark-history:
+    image: docker.io/bitnami/spark:3.5
+    profiles: ['all', 'history']
+    entrypoint: ['start-history-server.sh']
+    depends_on:
+      - spark
+    ports:
+      - '18080:18080'
+
+  ################
+  # HDFS
+  ################
+  # # single container version
+  # namenode:
+  #   profiles: ['all', 'hdfs']
+  #   build: docker/hdfs
+  #   image: peccu/hdfs
+  #   # image: hdfs
+  #   command: single
+  #   ports:
+  #     # web ui
+  #     - "9870:9870"
+  #   environment:
+  #     - CLUSTER_NAME=cluster
+
+  namenode:
+    profiles: ['all', 'hdfs']
+    # build: docker/hdfs
+    image: peccu/hdfs
+    # image: hdfs
+    command: namenode
+    ports:
+      # web ui
+      - "9870:9870"
+    environment:
+      - CLUSTER_NAME=cluster
+
+  datanode:
+    profiles: ['all', 'hdfs']
+    # build: docker/hdfs
+    image: peccu/hdfs
+    # image: hdfs
+    command: datanode
+    ports:
+      # web ui
+      - "9864:9864"
+    depends_on:
+      - namenode
+    environment:
+      - CLUSTER_NAME=cluster
+      - SERVICE_PRECONDITION=namenode:9870
+
+  # ################
+  # # Hive
+  # ################
+  # hive-metastore:
+  #   profiles: ['all', 'hive']
+  #   # build:
+  #   #   context: docker/hive
+  #   #   dockerfile: Dockerfile.metastore
+  #   image: peccu/hive-metastore
+  #   # image: metastore
+  #   ports:
+  #     - "9083:9083"
+
+  # hive-server:
+  #   profiles: ['all', 'hive']
+  #   # build:
+  #   #   context: docker/hive
+  #   #   dockerfile: Dockerfile.server
+  #   image: peccu/hive-server
+  #   # image: hive-server
+  #   ports:
+  #     - "10000:10000"
+  #   depends_on:
+  #     - hive-metastore
+
+  dot:
+    profiles: ['dot']
+    build: docker/graphviz
+    volumes:
+      - ./doc:/doc
+
+volumes:
+  spark-logs:

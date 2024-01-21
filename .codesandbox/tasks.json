@@ -1,0 +1,24 @@
+{
+  // These tasks will run in order when initializing your CodeSandbox project.
+  "setupTasks": [],
+
+  // These tasks can be run from CodeSandbox. Running one will open a log in the app.
+  "tasks": {
+    "docker compose up": {
+      "name": "docker compose up",
+      "command": "docker compose -f .codesandbox/compose.yml --profile all up",
+      "runAtStart": true,
+      "preview": {
+        "port": 8888
+      }
+    },
+    "docker compose -f .codesandbox/compose.yml --profile all pull": {
+      "name": "pull images",
+      "command": "docker compose -f .codesandbox/compose.yml --profile all pull"
+    },
+    "docker compose -f .codesandbox/compose.yml --profile all down": {
+      "name": "docker compose down",
+      "command": "docker compose -f .codesandbox/compose.yml --profile all down"
+    }
+  }
+}
