@@ -1,8 +1,31 @@
-# Spark
+# Jupyter Lab and Spark and HDFS
+
+## setup
+
+- build images
+
+```
+./build-images.sh
+```
+
+- run containers
+
+```
+docker compose --profile all up -d
+```
+
+- UIs
+  - Jupyter Lab http://localhost:8888
+  - Spark master http://localhost:8080
+  - HDFS namenode http://localhost:9870
+
+## Container relations
+
+![](./doc/container-relation.svg)
 
 ## pip packages
 
-to add pip packages
+to add pip packages into Jupyter lab container,
 
 write down it to `jupyterlab/requirements/requirements.in` and run below command:
 

@@ -242,5 +242,11 @@ services:
   #   depends_on:
   #     - hive-metastore
 
+  dot:
+    profiles: ['dot']
+    build: docker/graphviz
+    volumes:
+      - ./doc:/doc
+
 volumes:
   spark-logs:

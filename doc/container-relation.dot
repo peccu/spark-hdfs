@@ -1,0 +1,41 @@
+digraph{
+  node [style=rounded, shape=rect];
+  shape=rect;
+  style=rounded;
+
+  subgraph cluster_client {
+    label = "Client"
+    browser
+  }
+
+  subgraph cluster_jupyter {
+    label = "Jupyter Lab"
+    jupyter
+  }
+
+  subgraph cluster_spark {
+    label = "Spark cluster"
+    master
+    worker
+  }
+
+  subgraph cluster_hdfs {
+    label = "HDFS"
+    namenode
+    datanode
+  }
+  browser -> jupyter
+    [label = "notebook (8888)"]
+  browser -> master
+    [label = "Spark console (8080)"]
+  browser -> namenode
+    [label = "HDFS File System Utility (9870)"]
+  jupyter -> master
+    [label = "send programs"]
+  master -> worker
+    [label = "process programs"]
+  worker -> namenode
+    [label = "query which node has the partition"]
+  worker -> datanode
+    [label = "read/write actual files"]
+  }

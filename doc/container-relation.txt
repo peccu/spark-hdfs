@@ -1,0 +1,18 @@
+# convert this txt to dot in https://peccu.github.io/md2dot/
+- client : Client
+  - browser
+- jupyter : Jupyter Lab
+  - jupyter
+- spark : Spark cluster
+  - master
+  - worker
+- hdfs : HDFS
+  - namenode
+  - datanode
+- browser -> jupyter : notebook (8888)
+- browser -> master : Spark console (8080)
+- browser -> namenode : HDFS File System Utility (9870)
+- jupyter -> master : send programs
+- master -> worker : process programs
+- worker -> namenode : query which node has the partition
+- worker -> datanode: read/write actual files
