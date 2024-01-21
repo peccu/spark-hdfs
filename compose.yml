@@ -43,7 +43,7 @@ services:
     depends_on:
       - spark
     ports:
-      - '28888:8888'
+      - '8888:8888'
     volumes: *volumes
 
   ################
@@ -61,17 +61,17 @@ services:
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
       - SPARK_RPC_ENCRYPTION_ENABLED=no
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_MASTER_WEBUI_PORT=2080
+      - SPARK_MASTER_WEBUI_PORT=8080
       - SPARK_USER=root
       - SPARK_DAEMON_USER=root
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:2080" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
       interval: 5s
       timeout: 3s
       retries: 3
     restart: always
     ports:
-      - '2080:2080'
+      - '8080:8080'
       - '4040:4040'
     volumes: *volumes
 
@@ -89,11 +89,11 @@ services:
       - SPARK_DAEMON_USER=root
       # for fixing web ui url
       - SPARK_PUBLIC_DNS=localhost
-      - SPARK_WORKER_WEBUI_PORT=28081
+      - SPARK_WORKER_WEBUI_PORT=8081
       - SPARK_MASTER_HOST=spark
-      - SPARK_MASTER_WEBUI_PORT=2080
+      - SPARK_MASTER_WEBUI_PORT=8080
     ports:
-      - '28081:28081'
+      - '8081:8081'
 
   # worker2:
   #   << : *worker
@@ -109,11 +109,11 @@ services:
   #     - SPARK_DAEMON_USER=root
   #     # for fixing web ui url
   #     - SPARK_PUBLIC_DNS=localhost
-  #     - SPARK_WORKER_WEBUI_PORT=28082
+  #     - SPARK_WORKER_WEBUI_PORT=8082
   #     - SPARK_MASTER_HOST=spark
-  #     - SPARK_MASTER_WEBUI_PORT=2080
+  #     - SPARK_MASTER_WEBUI_PORT=8080
   #   ports:
-  #     - '28082:28082'
+  #     - '8082:8082'
 
   # worker3:
   #   << : *worker
@@ -129,11 +129,11 @@ services:
   #     - SPARK_DAEMON_USER=root
   #     # for fixing web ui url
   #     - SPARK_PUBLIC_DNS=localhost
-  #     - SPARK_WORKER_WEBUI_PORT=28083
+  #     - SPARK_WORKER_WEBUI_PORT=8083
   #     - SPARK_MASTER_HOST=spark
-  #     - SPARK_MASTER_WEBUI_PORT=2080
+  #     - SPARK_MASTER_WEBUI_PORT=8080
   #   ports:
-  #     - '28083:28083'
+  #     - '8083:8083'
 
   # worker4:
   #   << : *worker
@@ -149,11 +149,11 @@ services:
   #     - SPARK_DAEMON_USER=root
   #     # for fixing web ui url
   #     - SPARK_PUBLIC_DNS=localhost
-  #     - SPARK_WORKER_WEBUI_PORT=28084
+  #     - SPARK_WORKER_WEBUI_PORT=8084
   #     - SPARK_MASTER_HOST=spark
-  #     - SPARK_MASTER_WEBUI_PORT=2080
+  #     - SPARK_MASTER_WEBUI_PORT=8080
   #   ports:
-  #     - '28084:28084'
+  #     - '8084:8084'
 
   spark-history:
     image: docker.io/bitnami/spark:3.5
