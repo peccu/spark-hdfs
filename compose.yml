@@ -217,30 +217,30 @@ services:
       - CLUSTER_NAME=cluster
       - SERVICE_PRECONDITION=namenode:9870
 
-  # ################
-  # # Hive
-  # ################
-  # hive-metastore:
-  #   profiles: ['all', 'hive']
-  #   build:
-  #     context: docker/hive
-  #     dockerfile: Dockerfile.metastore
-  #   # image: peccu/hive-metastore
-  #   # image: metastore
-  #   ports:
-  #     - "9083:9083"
+  ################
+  # Hive
+  ################
+  hive-metastore:
+    profiles: ['all', 'hive']
+    # build:
+    #   context: docker/hive
+    #   dockerfile: Dockerfile.metastore
+    # image: peccu/hive-metastore
+    image: metastore
+    ports:
+      - "9083:9083"
 
-  # hive-server:
-  #   profiles: ['all', 'hive']
-  #   # build:
-  #   #   context: docker/hive
-  #   #   dockerfile: Dockerfile.server
-  #   # image: peccu/hive-server
-  #   image: hive-server
-  #   ports:
-  #     - "10000:10000"
-  #   depends_on:
-  #     - hive-metastore
+  hive-server:
+    profiles: ['all', 'hive']
+    # build:
+    #   context: docker/hive
+    #   dockerfile: Dockerfile.server
+    # image: peccu/hive-server
+    image: hive-server
+    ports:
+      - "10000:10000"
+    depends_on:
+      - hive-metastore
 
   dot:
     profiles: ['dot']
