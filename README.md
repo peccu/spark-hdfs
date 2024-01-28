@@ -29,11 +29,18 @@ to add pip packages into Jupyter lab container,
 
 write down it to `jupyterlab/requirements/requirements.in` and run below command:
 
+- for not running env
 ```
-docker compose run --rm --entrypoint /bin/bash -w /requirements jupyter -c "pip-compile-multi" && docker compose build
+docker compose run --rm --entrypoint /bin/bash -w /requirements jupyter -c "pip-compile-multi --live" && docker compose build
 ```
 
-or, just run  `make pip-compile-multi`.
+- for running env
+```
+docker compose --profile all exec -w /requirements jupyter bash -c "pip-compile-multi --live"
+docker compose --profile all exec -w /requirements jupyter bash -c "pip install -r requirements/requirements.txt"
+```
+
+or, just run  `make pip-compile-multi` and so on.
 
 ## refs
 
