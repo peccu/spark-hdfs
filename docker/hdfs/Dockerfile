@@ -15,5 +15,7 @@ EXPOSE 9864
 
 ADD init.sh /bin/
 
+WORKDIR /hdfs-shared-data
+VOLUME [ "/hdfs-shared-data" ]
 # Start Hadoop
 ENTRYPOINT ["/bin/init.sh"]
