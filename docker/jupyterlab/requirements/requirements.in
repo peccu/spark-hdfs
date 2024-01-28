@@ -5,6 +5,8 @@ pip-compile-multi
 # pip install -Ur requirements/local.txt
 ipython
 pandas
+openpyxl
+fsspec
 pyarrow
 numpy
 pyspark
