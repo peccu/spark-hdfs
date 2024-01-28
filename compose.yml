@@ -39,11 +39,13 @@ services:
       - SPARK_MASTER=spark:://spark:7077
       - SPARK_USER=root
       - SPARK_DAEMON_USER=root
+      - SPARK_PUBLIC_DNS=localhost
     restart: always
     depends_on:
       - spark
     ports:
       - '8888:8888'
+      - '5050:4040'             # for Spark Context App UI
     volumes: *volumes
 
   ################
@@ -221,7 +223,7 @@ services:
   # Hive
   ################
   hive-metastore:
-    profiles: ['all', 'hive']
+    profiles: ['hive']
     # build:
     #   context: docker/hive
     #   dockerfile: Dockerfile.metastore
@@ -231,7 +233,7 @@ services:
       - "9083:9083"
 
   hive-server:
-    profiles: ['all', 'hive']
+    profiles: ['hive']
     # build:
     #   context: docker/hive
     #   dockerfile: Dockerfile.server
